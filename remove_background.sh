@@ -45,8 +45,12 @@ H=240      # crop height
 # Since a background image without fish was not provided, we need to make one from the video.
 # We can do this by averaging over all the frames.
 # Crop video and save as png files
-ffmpeg -r ${FRAME_RATE} -i ${f} -t 30 -filter:v "crop=${W}:${H}:${X}:${Y}" "$TEMP/${z}_%05d.png" -y
 
+# Run only the first 30 seconds  (-t 30)
+# ffmpeg -r ${FRAME_RATE} -i ${f} -t 30 -filter:v "crop=${W}:${H}:${X}:${Y}" -start_number 0 "$TEMP/${z}_%05d.png" -y
+
+# Do entire mp4 file
+ffmpeg -r ${FRAME_RATE} -i ${f} -filter:v "crop=${W}:${H}:${X}:${Y}" -start_number 0 "$TEMP/${z}_%05d.png" -y
 ################################################################################
 # This BASH function cuts up the files in to 100 file chunks due to memory limitations.
 # Then it will calculate the average image
@@ -54,11 +58,11 @@ ffmpeg -r ${FRAME_RATE} -i ${f} -t 30 -filter:v "crop=${W}:${H}:${X}:${Y}" "$TEM
 calculate_group_average() {
   N=$(ls ${TEMP}/${z}_[0-9]*.png|wc -l) # Determine the number of files
   M=$(($N / 100))                       # Group by 100 files
-  i=1                                   # Counter for averaged frames
+  i=0                                   # Counter for averaged frames
 
-  echo "Process $N number of frames."
+  echo "Process $N number of frames. In $((M+1)) groups."
   until [ $i -gt ${M} ]; do
-    echo "This is pass number $i."
+    echo "This is pass number $((i+1))."
     FNAME=$(printf "${z}_%03d[0-9][0-9].png" "$i")
     ONAME=$(printf "${z}_%03d_average.png" "$i")
     convert ${TEMP}/${FNAME} -colorspace Gray -evaluate-sequence Mean ${TEMP}/${ONAME} &
@@ -81,7 +85,7 @@ remove_background() {
 } 
 
 echo "Next remove the background from each png file."
-k=1
+k=0
 THREADS=10
 for g in ${TEMP}/${z}_[0-9]*[0-9].png; do
   if (( k % THREADS == 0 )); then

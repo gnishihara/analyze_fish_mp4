@@ -60,6 +60,9 @@ TEMP=str_replace(FOLDER, "original", "original_frames")
 OUT=str_replace(FOLDER, "original", "removed_background")
 args = commandArgs(trailingOnly = TRUE)
 
+# If you only want to run this script, args need to be given explicitly.
+# args = "2020.08.18_Chp0.1mgL_1h_front"2020.08.18_Chp0.1mgL_1h_front.MP4
+
 ################################################################################
 fnames = dir(OUT, pattern = args, full = TRUE)
 dset = tibble(fnames)

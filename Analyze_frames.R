@@ -53,7 +53,9 @@ process_data = function(dset, g) {
 }
 
 args = commandArgs(trailingOnly = TRUE)
-
+# If you only want to run this script, args need to be given explicitly.
+# args = "2020.08.18_Chp0.1mgL_1h_front"
+args = "2020.08.18_Cont._1h_front"
 FOLDER="/home/Lab_Data/videofile/fish_videos/original"
 TEMP=str_replace(FOLDER, "original", "original_frames")
 OUT=str_replace(FOLDER, "original", "removed_background")
